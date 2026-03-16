@@ -56,12 +56,21 @@ export async function POST(req: Request) {
                 type: string;
                 rawItem: { call_id?: string; output?: string };
               };
+              const rawOutput = item.rawItem.output;
+              const outputStr =
+                typeof rawOutput === 'string'
+                  ? rawOutput
+                  : typeof rawOutput === 'object' &&
+                      rawOutput !== null &&
+                      'text' in rawOutput
+                    ? String((rawOutput as { text: unknown }).text)
+                    : JSON.stringify(rawOutput ?? '');
               controller.enqueue(
                 encoder.encode(
                   JSON.stringify({
                     type: 'tool_call_output',
                     toolCallId: item.rawItem.call_id ?? '',
-                    output: item.rawItem.output ?? '',
+                    output: outputStr,
                   }) + '\n',
                 ),
               );

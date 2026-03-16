@@ -56,10 +56,16 @@ export function ToolCallIndicator({ toolCall }: { toolCall: ToolCallInfo }) {
   );
 }
 
-function tryFormatJson(str: string): string {
+function tryFormatJson(value: unknown): string {
+  if (typeof value !== 'string') {
+    if (typeof value === 'object' && value !== null && 'text' in value) {
+      return tryFormatJson(String((value as { text: unknown }).text));
+    }
+    return JSON.stringify(value, null, 2);
+  }
   try {
-    return JSON.stringify(JSON.parse(str), null, 2);
+    return JSON.stringify(JSON.parse(value), null, 2);
   } catch {
-    return str;
+    return value;
   }
 }
