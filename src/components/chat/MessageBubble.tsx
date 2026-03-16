@@ -1,8 +1,25 @@
 import type { Message } from '@/types/chat';
 import { ToolCallIndicator } from './ToolCallIndicator';
 
+function resolveContent(content: unknown): string {
+  if (typeof content === 'string') return content;
+  if (Array.isArray(content)) {
+    return content
+      .map((block) =>
+        typeof block === 'string'
+          ? block
+          : typeof block === 'object' && block !== null && 'text' in block
+            ? String((block as { text: unknown }).text)
+            : '',
+      )
+      .join('');
+  }
+  return String(content ?? '');
+}
+
 export function MessageBubble({ message }: { message: Message }) {
   const isUser = message.role === 'user';
+  const displayContent = resolveContent(message.content);
 
   return (
     <div className={`flex ${isUser ? 'justify-end' : 'justify-start'}`}>
@@ -17,7 +34,7 @@ export function MessageBubble({ message }: { message: Message }) {
           <ToolCallIndicator key={tc.id} toolCall={tc} />
         ))}
         <div className="whitespace-pre-wrap text-sm leading-relaxed">
-          {message.content}
+          {displayContent}
           {message.isStreaming && (
             <span className="ml-0.5 inline-block h-4 w-1.5 animate-blink bg-current align-text-bottom" />
           )}
