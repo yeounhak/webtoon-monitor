@@ -30,8 +30,8 @@ export function MessageBubble({ message }: { message: Message }) {
             : 'bg-zinc-100 text-zinc-900 dark:bg-zinc-800 dark:text-zinc-100'
         }`}
       >
-        {message.toolCalls?.map((tc) => (
-          <ToolCallIndicator key={tc.id} toolCall={tc} />
+        {message.toolCalls?.map((tc, index) => (
+          <ToolCallIndicator key={tc.id || `tc-${index}`} toolCall={tc} />
         ))}
         <div className="whitespace-pre-wrap text-sm leading-relaxed">
           {displayContent}
