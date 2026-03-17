@@ -18,6 +18,8 @@ export async function POST(req: Request) {
   const readable = new ReadableStream({
     async start(controller) {
       try {
+        const fallbackIdQueue: string[] = [];
+
         for await (const event of result) {
           if (event.type === 'raw_model_stream_event') {
             const data = event.data as Record<string, unknown>;
@@ -41,11 +43,16 @@ export async function POST(req: Request) {
                   arguments?: string;
                 };
               };
+              let callId = item.rawItem.call_id;
+              if (!callId) {
+                callId = crypto.randomUUID();
+                fallbackIdQueue.push(callId);
+              }
               controller.enqueue(
                 encoder.encode(
                   JSON.stringify({
                     type: 'tool_call_start',
-                    toolCallId: item.rawItem.call_id ?? '',
+                    toolCallId: callId,
                     toolName: item.rawItem.name ?? '',
                     arguments: item.rawItem.arguments ?? '',
                   }) + '\n',
@@ -56,6 +63,7 @@ export async function POST(req: Request) {
                 type: string;
                 rawItem: { call_id?: string; output?: string };
               };
+              const outputCallId = item.rawItem.call_id || fallbackIdQueue.shift() || crypto.randomUUID();
               const rawOutput = item.rawItem.output;
               const outputStr =
                 typeof rawOutput === 'string'
@@ -69,7 +77,7 @@ export async function POST(req: Request) {
                 encoder.encode(
                   JSON.stringify({
                     type: 'tool_call_output',
-                    toolCallId: item.rawItem.call_id ?? '',
+                    toolCallId: outputCallId,
                     output: outputStr,
                   }) + '\n',
                 ),
