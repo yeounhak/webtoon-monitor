@@ -10,23 +10,43 @@ export const exchangeRateTool = tool({
     amount: z.number().describe('변환할 금액').default(1),
   }),
   execute: async ({ from, to, amount }) => {
-    const res = await fetch(
-      `https://open.er-api.com/v6/latest/${encodeURIComponent(from.toUpperCase())}`,
-    );
-    if (!res.ok) {
-      return JSON.stringify({ error: `환율 조회 실패: ${from}` });
+    const url = `https://open.er-api.com/v6/latest/${encodeURIComponent(from.toUpperCase())}`;
+    const method = 'GET';
+    try {
+      const res = await fetch(url);
+      if (!res.ok) {
+        return JSON.stringify({
+          success: false,
+          httpMeta: { method, url, status: res.status },
+          error: `환율 조회 실패: ${from} (HTTP ${res.status})`,
+        });
+      }
+      const data = await res.json();
+      const rate = data.rates?.[to.toUpperCase()];
+      if (rate == null) {
+        return JSON.stringify({
+          success: false,
+          httpMeta: { method, url, status: res.status },
+          error: `지원하지 않는 통화: ${to}`,
+        });
+      }
+      return JSON.stringify({
+        success: true,
+        httpMeta: { method, url, status: res.status },
+        data: {
+          from: from.toUpperCase(),
+          to: to.toUpperCase(),
+          rate,
+          amount,
+          converted: Math.round(amount * rate * 100) / 100,
+        },
+      });
+    } catch (err) {
+      return JSON.stringify({
+        success: false,
+        httpMeta: { method, url, status: null },
+        error: `네트워크 오류: ${err instanceof Error ? err.message : String(err)}`,
+      });
     }
-    const data = await res.json();
-    const rate = data.rates?.[to.toUpperCase()];
-    if (rate == null) {
-      return JSON.stringify({ error: `지원하지 않는 통화: ${to}` });
-    }
-    return JSON.stringify({
-      from: from.toUpperCase(),
-      to: to.toUpperCase(),
-      rate,
-      amount,
-      converted: Math.round(amount * rate * 100) / 100,
-    });
   },
 });
