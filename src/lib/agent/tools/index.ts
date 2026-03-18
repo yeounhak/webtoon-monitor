@@ -1,4 +1,3 @@
-import { weatherTool } from './weather';
-import { exchangeRateTool } from './exchange-rate';
+import { neloTools } from './nelo';
 
-export const agentTools = [weatherTool, exchangeRateTool];
+export const agentTools = neloTools;
