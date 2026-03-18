@@ -114,7 +114,16 @@ export function useChat() {
                   },
                 });
                 break;
-              case 'tool_call_output':
+              case 'tool_call_output': {
+                let toolStatus: 'completed' | 'error' = 'completed';
+                try {
+                  const parsed = JSON.parse(event.output);
+                  if (parsed && typeof parsed === 'object' && 'error' in parsed) {
+                    toolStatus = 'error';
+                  }
+                } catch {
+                  // JSON이 아니면 completed 유지
+                }
                 dispatch({
                   type: 'UPDATE_TOOL_CALL',
                   payload: {
@@ -123,11 +132,12 @@ export function useChat() {
                     toolCallId: event.toolCallId,
                     updates: {
                       output: event.output,
-                      status: 'completed',
+                      status: toolStatus,
                     },
                   },
                 });
                 break;
+              }
               case 'error':
                 dispatch({
                   type: 'APPEND_TO_MESSAGE',
