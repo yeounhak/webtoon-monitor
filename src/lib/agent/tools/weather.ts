@@ -19,8 +19,8 @@ export const weatherTool = tool({
           error: `날씨 조회 실패: ${city} (HTTP ${res.status})`,
         });
       }
-      const data = await res.json();
-      const cur = data.current_condition?.[0];
+      const json = await res.json();
+      const cur = (json.current_condition ?? json.data?.current_condition)?.[0];
       return JSON.stringify({
         success: true,
         httpMeta: { method, url, status: res.status },
