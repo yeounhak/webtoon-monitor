@@ -47,10 +47,25 @@ export function ToolCallIndicator({ toolCall }: { toolCall: ToolCallInfo }) {
           {toolCall.status === 'calling' && ' 호출 중...'}
         </span>
       </div>
+      {toolCall.arguments && (
+        <details className="mt-1.5">
+          <summary className="cursor-pointer select-none text-zinc-500 hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-200">
+            요청
+          </summary>
+          <pre className="mt-1 max-h-24 overflow-auto whitespace-pre-wrap break-all text-zinc-500 dark:text-zinc-400">
+            {tryFormatJson(toolCall.arguments)}
+          </pre>
+        </details>
+      )}
       {toolCall.output && (
-        <pre className="mt-1.5 max-h-24 overflow-auto whitespace-pre-wrap break-all text-zinc-500 dark:text-zinc-400">
-          {tryFormatJson(toolCall.output)}
-        </pre>
+        <details className="mt-1.5">
+          <summary className="cursor-pointer select-none text-zinc-500 hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-200">
+            응답
+          </summary>
+          <pre className="mt-1 max-h-24 overflow-auto whitespace-pre-wrap break-all text-zinc-500 dark:text-zinc-400">
+            {tryFormatJson(toolCall.output)}
+          </pre>
+        </details>
       )}
     </div>
   );
