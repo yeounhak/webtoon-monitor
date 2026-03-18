@@ -5,9 +5,10 @@ import { useState, useRef, useCallback, type KeyboardEvent } from 'react';
 interface ChatInputProps {
   onSend: (message: string) => void;
   disabled?: boolean;
+  variant?: 'default' | 'welcome';
 }
 
-export function ChatInput({ onSend, disabled }: ChatInputProps) {
+export function ChatInput({ onSend, disabled, variant = 'default' }: ChatInputProps) {
   const [value, setValue] = useState('');
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -36,7 +37,7 @@ export function ChatInput({ onSend, disabled }: ChatInputProps) {
   };
 
   return (
-    <div className="border-t border-zinc-200 bg-white p-4 dark:border-zinc-700 dark:bg-zinc-900">
+    <div className={variant === 'welcome' ? 'p-4' : 'border-t border-zinc-200 bg-white p-4 dark:border-zinc-700 dark:bg-zinc-900'}>
       <div className="mx-auto flex max-w-3xl items-end gap-3">
         <textarea
           ref={textareaRef}
@@ -49,7 +50,7 @@ export function ChatInput({ onSend, disabled }: ChatInputProps) {
           placeholder="메시지를 입력하세요..."
           disabled={disabled}
           rows={1}
-          className="flex-1 resize-none rounded-xl border border-zinc-300 bg-zinc-50 px-4 py-3 text-sm outline-none transition-colors placeholder:text-zinc-400 focus:border-zinc-500 disabled:opacity-50 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100 dark:placeholder:text-zinc-500 dark:focus:border-zinc-400"
+          className={`flex-1 resize-none rounded-xl border border-zinc-300 bg-zinc-50 px-4 py-3 text-sm outline-none transition-colors placeholder:text-zinc-400 focus:border-zinc-500 disabled:opacity-50 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100 dark:placeholder:text-zinc-500 dark:focus:border-zinc-400${variant === 'welcome' ? ' shadow-lg' : ''}`}
         />
         <button
           onClick={handleSend}

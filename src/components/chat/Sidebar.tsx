@@ -7,13 +7,8 @@ export function Sidebar() {
   const state = useChatState();
   const dispatch = useChatDispatch();
 
-  const createRoom = () => {
-    const id = crypto.randomUUID();
-    const roomNumber = state.rooms.length + 1;
-    dispatch({
-      type: 'CREATE_ROOM',
-      payload: { id, name: `채팅 ${roomNumber}` },
-    });
+  const handleNewChat = () => {
+    dispatch({ type: 'DESELECT_ROOM' });
   };
 
   return (
@@ -23,7 +18,7 @@ export function Sidebar() {
           Chat
         </h1>
         <button
-          onClick={createRoom}
+          onClick={handleNewChat}
           className="rounded-lg p-1.5 text-zinc-500 transition-colors hover:bg-zinc-200 hover:text-zinc-700 dark:text-zinc-400 dark:hover:bg-zinc-700 dark:hover:text-zinc-200"
           title="새 채팅"
         >
