@@ -20,7 +20,7 @@ export const weatherTool = tool({
         });
       }
       const json = await res.json();
-      const cur = (json.current_condition ?? json.data?.current_condition)?.[0];
+      const cur = json.data?.current_condition?.[0];
       return JSON.stringify({
         success: true,
         httpMeta: { method, url, status: res.status },
