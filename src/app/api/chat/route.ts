@@ -73,12 +73,30 @@ export async function POST(req: Request) {
                       'text' in rawOutput
                     ? String((rawOutput as { text: unknown }).text)
                     : JSON.stringify(rawOutput ?? '');
+
+              let isError = false;
+              let httpMeta: { method: string; url: string; status: number | null } | undefined;
+              try {
+                const parsed = JSON.parse(outputStr);
+                if (parsed && typeof parsed === 'object') {
+                  isError = parsed.success === false;
+                  if (parsed.httpMeta) {
+                    httpMeta = parsed.httpMeta;
+                  }
+                }
+              } catch {
+                // JSON 파싱 실패 = SDK 기본 에러 문자열
+                isError = true;
+              }
+
               controller.enqueue(
                 encoder.encode(
                   JSON.stringify({
                     type: 'tool_call_output',
                     toolCallId: outputCallId,
                     output: outputStr,
+                    isError,
+                    ...(httpMeta && { httpMeta }),
                   }) + '\n',
                 ),
               );
