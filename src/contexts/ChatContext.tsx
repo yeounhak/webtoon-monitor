@@ -39,7 +39,8 @@ type ChatAction =
         toolCallId: string;
         updates: Partial<ToolCallInfo>;
       };
-    };
+    }
+  | { type: 'DESELECT_ROOM' };
 
 function chatReducer(state: ChatState, action: ChatAction): ChatState {
   switch (action.type) {
@@ -69,6 +70,8 @@ function chatReducer(state: ChatState, action: ChatAction): ChatState {
     }
     case 'SELECT_ROOM':
       return { ...state, activeRoomId: action.payload.id };
+    case 'DESELECT_ROOM':
+      return { ...state, activeRoomId: null };
     case 'ADD_MESSAGE':
       return {
         ...state,

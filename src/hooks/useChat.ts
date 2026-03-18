@@ -13,8 +13,8 @@ export function useChat() {
   const isStreaming = activeRoom?.messages.some((m) => m.isStreaming) ?? false;
 
   const sendMessage = useCallback(
-    async (content: string) => {
-      const roomId = state.activeRoomId;
+    async (content: string, targetRoomId?: string) => {
+      const roomId = targetRoomId ?? state.activeRoomId;
       if (!roomId || !content.trim()) return;
 
       // Abort previous stream
