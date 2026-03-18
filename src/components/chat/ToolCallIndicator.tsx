@@ -1,8 +1,11 @@
 import type { ToolCallInfo } from '@/types/chat';
 
 const TOOL_LABELS: Record<string, string> = {
-  get_weather: '날씨 조회',
-  get_exchange_rate: '환율 조회',
+  search_logs: '로그 검색',
+  get_log_stats: '로그 통계',
+  get_alerts: '알림 조회',
+  get_traffic_today: '트래픽 조회',
+  get_search_schemas: '검색 필드 조회',
 };
 
 export function ToolCallIndicator({ toolCall }: { toolCall: ToolCallInfo }) {
