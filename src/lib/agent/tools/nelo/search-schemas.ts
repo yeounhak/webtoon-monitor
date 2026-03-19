@@ -1,6 +1,6 @@
 import { tool } from '@openai/agents';
 import { z } from 'zod';
-import { neloFetch, NELO_PROJECTS } from './client';
+import { neloFetch, NELO_PROJECTS, resolveProjectId } from './client';
 
 export const searchSchemasTool = tool({
   name: 'get_search_schemas',
@@ -9,6 +9,9 @@ export const searchSchemasTool = tool({
     projectName: z.enum(NELO_PROJECTS).describe('NELO 프로젝트명'),
   }),
   execute: async ({ projectName }) => {
-    return neloFetch('GET', '/api/v2/search/schemas', { projectName });
+    const projectId = resolveProjectId(projectName);
+    return neloFetch('GET', '/api/v2/search/schemas', {
+      'dataSource.projectIds': projectId,
+    });
   },
 });
